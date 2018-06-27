@@ -147,8 +147,15 @@ public class MainActivity extends AppCompatActivity {
         mQuestionTextView.setText(COLORS_TEXT[random.nextInt(mButtons.length)]);
     }
 
-    private void checkAnswer(){
-
+    private boolean checkAnswer(ColorDrawable backgroundColor){
+        return(backgroundColor.getColor() == getColor(R.color.red) && mQuestionTextView.getText().equals(getString(R.string.red)) ||
+                backgroundColor.getColor() == getColor(R.color.orange) && mQuestionTextView.getText().equals(getString(R.string.orange)) ||
+                backgroundColor.getColor() == getColor(R.color.blue) && mQuestionTextView.getText().equals(getString(R.string.blue)) ||
+                backgroundColor.getColor() == getColor(R.color.brown) && mQuestionTextView.getText().equals(getString(R.string.brown)) ||
+                backgroundColor.getColor() == getColor(R.color.green) && mQuestionTextView.getText().equals(getString(R.string.green)) ||
+                backgroundColor.getColor() == getColor(R.color.pink) && mQuestionTextView.getText().equals(getString(R.string.pink)) ||
+                backgroundColor.getColor() == getColor(R.color.yellow) && mQuestionTextView.getText().equals(getString(R.string.yellow)) ||
+                backgroundColor.getColor() == getColor(R.color.purple) && mQuestionTextView.getText().equals(getString(R.string.purple)));
     }
 
     private class buttonsClickListener implements View.OnClickListener{
@@ -156,14 +163,7 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View view){
             ColorDrawable backgroundColor = (ColorDrawable)view.getBackground();
             if (remainingTime > 0){
-                if (backgroundColor.getColor() == getColor(R.color.red) && mQuestionTextView.getText().equals(getString(R.string.red)) ||
-                        backgroundColor.getColor() == getColor(R.color.orange) && mQuestionTextView.getText().equals(getString(R.string.orange)) ||
-                        backgroundColor.getColor() == getColor(R.color.blue) && mQuestionTextView.getText().equals(getString(R.string.blue)) ||
-                        backgroundColor.getColor() == getColor(R.color.brown) && mQuestionTextView.getText().equals(getString(R.string.brown)) ||
-                        backgroundColor.getColor() == getColor(R.color.green) && mQuestionTextView.getText().equals(getString(R.string.green)) ||
-                        backgroundColor.getColor() == getColor(R.color.pink) && mQuestionTextView.getText().equals(getString(R.string.pink)) ||
-                        backgroundColor.getColor() == getColor(R.color.yellow) && mQuestionTextView.getText().equals(getString(R.string.yellow)) ||
-                        backgroundColor.getColor() == getColor(R.color.purple) && mQuestionTextView.getText().equals(getString(R.string.purple))){
+                if (checkAnswer(backgroundColor)){
                         rightAnswers++;
                         mRightAnswers.setText(String.valueOf(rightAnswers));
                 }

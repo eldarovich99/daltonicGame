@@ -13,5 +13,7 @@
     <string name="orange">Orange</string>
     <string name="right_answers">Right answers:</string>
     <string name="time_is_over">"Your time is over!"</string>
+    <string name="play">Play</string>
+    <string name="settings">Settings</string>
 </resources>
 
