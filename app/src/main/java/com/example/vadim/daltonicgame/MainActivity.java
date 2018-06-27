@@ -1,20 +1,13 @@
 package com.example.vadim.daltonicgame;
 
-import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.sql.Time;
-import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -23,14 +16,18 @@ public class MainActivity extends AppCompatActivity {
     private Timer mTimer;
     private TextView mTimerTextView;
     private TextView mQuestionTextView;
+    private TextView mRightAnswers;
     private Random random;
-    private int timeAfterStart = 60;
+    private final int GAME_DURATION = 60;
+    private int remainingTime;
     final int DELAY = 1000;
     final int PERIOD = 1000;
     private int[] COLORS;
+    private int rightAnswers;
     private String[] COLORS_TEXT;
     private Button[] mButtons;
-
+    private Button mStartButton;
+    private Button mStopButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,8 +44,11 @@ public class MainActivity extends AppCompatActivity {
                 getString(R.string.pink), getString(R.string.purple),
                 getString(R.string.yellow), getString(R.string.red),
                 getString(R.string.orange), getString(R.string.brown)};
+
         mQuestionTextView = findViewById(R.id.questionTextView);
         mTimerTextView = findViewById(R.id.timerTextView);
+        mRightAnswers = findViewById(R.id.rightAnswers);
+
 
         mButtons = new Button[8];
         mButtons[0] = findViewById(R.id.answerButton1);
@@ -59,13 +59,31 @@ public class MainActivity extends AppCompatActivity {
         mButtons[5] = findViewById(R.id.answerButton6);
         mButtons[6] = findViewById(R.id.answerButton7);
         mButtons[7] = findViewById(R.id.answerButton8);
+        mStartButton = findViewById(R.id.startButton);
+        mStopButton = findViewById(R.id.stopButton);
 
+        mStartButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startGame();
+            }
+        });
+
+        mStopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mTimer.cancel();
+                remainingTime = 0;
+                mTimerTextView.setText(String.valueOf(remainingTime));
+                String message = getString(R.string.right_answers) + rightAnswers;
+                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
 
         random = new Random();
 
-        mTimer = new Timer();
-
-        mTimerTextView.setText(String.valueOf(timeAfterStart));
+        mTimerTextView.setText(String.valueOf(remainingTime));
+        mRightAnswers.setText(String.valueOf(rightAnswers));
         initButtons();
         startGame();
     }
@@ -94,16 +112,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startGame(){
+        rightAnswers = 0;
+        mRightAnswers.setText("0");
+        remainingTime = GAME_DURATION;
+
+        mTimer = new Timer();
         mTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                timeAfterStart -=1;
+                remainingTime -=1;
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mTimerTextView.setText(String.valueOf(timeAfterStart));
-                        if (timeAfterStart == 0)
+                        mTimerTextView.setText(String.valueOf(remainingTime));
+                        if (remainingTime == 0) {
                             mTimer.cancel();
+                            String message = getString(R.string.right_answers) + rightAnswers;
+                            Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
             }
@@ -129,22 +155,22 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View view){
             ColorDrawable backgroundColor = (ColorDrawable)view.getBackground();
-            Log.d("btncolor", String.valueOf( mQuestionTextView.getText()));
-            Log.d("redcolor", String.valueOf(getColor(R.color.orange)));
-            if (backgroundColor.getColor() == getColor(R.color.red) && mQuestionTextView.getText().equals(getString(R.string.red)) ||
-                    backgroundColor.getColor() == getColor(R.color.orange) && mQuestionTextView.getText().equals(getString(R.string.orange)) ||
-                    backgroundColor.getColor() == getColor(R.color.blue) && mQuestionTextView.getText().equals(getString(R.string.blue)) ||
-                    backgroundColor.getColor() == getColor(R.color.brown) && mQuestionTextView.getText().equals(getString(R.string.brown)) ||
-                    backgroundColor.getColor() == getColor(R.color.green) && mQuestionTextView.getText().equals(getString(R.string.green)) ||
-                    backgroundColor.getColor() == getColor(R.color.pink) && mQuestionTextView.getText().equals(getString(R.string.pink)) ||
-                    backgroundColor.getColor() == getColor(R.color.yellow) && mQuestionTextView.getText().equals(getString(R.string.yellow)) ||
-                    backgroundColor.getColor() == getColor(R.color.purple) && mQuestionTextView.getText().equals(getString(R.string.purple))){
-
-
-                
-
-
-
+            if (remainingTime > 0){
+                if (backgroundColor.getColor() == getColor(R.color.red) && mQuestionTextView.getText().equals(getString(R.string.red)) ||
+                        backgroundColor.getColor() == getColor(R.color.orange) && mQuestionTextView.getText().equals(getString(R.string.orange)) ||
+                        backgroundColor.getColor() == getColor(R.color.blue) && mQuestionTextView.getText().equals(getString(R.string.blue)) ||
+                        backgroundColor.getColor() == getColor(R.color.brown) && mQuestionTextView.getText().equals(getString(R.string.brown)) ||
+                        backgroundColor.getColor() == getColor(R.color.green) && mQuestionTextView.getText().equals(getString(R.string.green)) ||
+                        backgroundColor.getColor() == getColor(R.color.pink) && mQuestionTextView.getText().equals(getString(R.string.pink)) ||
+                        backgroundColor.getColor() == getColor(R.color.yellow) && mQuestionTextView.getText().equals(getString(R.string.yellow)) ||
+                        backgroundColor.getColor() == getColor(R.color.purple) && mQuestionTextView.getText().equals(getString(R.string.purple))){
+                        rightAnswers++;
+                        mRightAnswers.setText(String.valueOf(rightAnswers));
+                }
+                changeQuestion();
+            }
+            else{
+                Toast.makeText(MainActivity.this, getString(R.string.time_is_over), Toast.LENGTH_SHORT).show();
             }
         }
     }
