@@ -1,5 +1,6 @@
 package com.example.vadim.daltonicgame;
 
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,6 +9,9 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -75,8 +79,7 @@ public class MainActivity extends AppCompatActivity {
                 mTimer.cancel();
                 remainingTime = 0;
                 mTimerTextView.setText(String.valueOf(remainingTime));
-                String message = getString(R.string.right_answers) + rightAnswers;
-                Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+                endGame();
             }
         });
 
@@ -111,6 +114,23 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void endGame(){
+        String message = getString(R.string.right_answers) + rightAnswers;
+        Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+        updateDatabase(rightAnswers);
+    }
+
+    private void updateDatabase(int score){
+        SQLiteDatabase database = getBaseContext().openOrCreateDatabase("rating.db", MODE_PRIVATE, null);
+        database.execSQL("CREATE TABLE IF NOT EXISTS users (date TEXT, score INTEGER)");
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd:MMMM:yyyy HH:mm:ss a", Locale.getDefault());
+        String date = simpleDateFormat.format(calendar.getTime());
+        String addingRecord = "INSERT INTO users VALUES ('" + date + "', " + String.valueOf(score) + ")";
+        database.execSQL(addingRecord);
+        database.close();
+    }
+
     private void startGame(){
         rightAnswers = 0;
         mRightAnswers.setText("0");
@@ -127,8 +147,7 @@ public class MainActivity extends AppCompatActivity {
                         mTimerTextView.setText(String.valueOf(remainingTime));
                         if (remainingTime == 0) {
                             mTimer.cancel();
-                            String message = getString(R.string.right_answers) + rightAnswers;
-                            Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+                            endGame();
                         }
                     }
                 });
