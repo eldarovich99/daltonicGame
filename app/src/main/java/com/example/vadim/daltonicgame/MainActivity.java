@@ -1,9 +1,11 @@
 package com.example.vadim.daltonicgame;
 
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -22,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView mQuestionTextView;
     private TextView mRightAnswers;
     private Random random;
-    private final int GAME_DURATION = 60;
+    private final int GAME_DURATION = 30;
     private int remainingTime;
     final int DELAY = 1000;
     final int PERIOD = 1000;
@@ -122,13 +124,39 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateDatabase(int score){
         SQLiteDatabase database = getBaseContext().openOrCreateDatabase("rating.db", MODE_PRIVATE, null);
-        database.execSQL("CREATE TABLE IF NOT EXISTS users (date TEXT, score INTEGER)");
-        Calendar calendar = Calendar.getInstance();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd:MMMM:yyyy HH:mm:ss a", Locale.getDefault());
-        String date = simpleDateFormat.format(calendar.getTime());
-        String addingRecord = "INSERT INTO users VALUES ('" + date + "', " + String.valueOf(score) + ")";
-        database.execSQL(addingRecord);
+        database.execSQL("CREATE TABLE IF NOT EXISTS top (date TEXT, name TEXT, score INTEGER)");
+
+        if (isBiggerScore(database, score)){
+            Calendar calendar = Calendar.getInstance();
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMMM yyyy HH:mm:ss ", Locale.getDefault());
+            String date = simpleDateFormat.format(calendar.getTime());
+            String name = "'Vadim'";
+            String addingRecord = "INSERT INTO top VALUES ('" + date + "', " + name + ", " + String.valueOf(score) + ")";
+            database.execSQL(addingRecord);
+        }
+        // debug info
+        Cursor query = database.rawQuery("SELECT * FROM top",null);
+        if (query.moveToFirst())
+            do {
+                Log.d("db", query.getString(0) + query.getString(1)+ String.valueOf(query.getInt(2)));
+            }
+            while (query.moveToNext());
+
         database.close();
+
+        //database.execSQL("DROP TABLE IF EXISTS top");
+    }
+
+    private boolean isBiggerScore(SQLiteDatabase database, int score){
+        Cursor query = database.rawQuery("SELECT * FROM top",null);
+        int max = 0;
+        if (query.moveToFirst())
+            do {
+                int currentScore = query.getInt(2);
+                if (currentScore > max) max = currentScore;
+            }
+            while (query.moveToNext());
+        return score > max;
     }
 
     private void startGame(){
