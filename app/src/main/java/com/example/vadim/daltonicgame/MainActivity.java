@@ -151,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
                     database.execSQL("CREATE TABLE IF NOT EXISTS top (date TEXT, name TEXT, score INTEGER)");
                         nameOfRecordsman = "'" + mNameEditText.getText().toString() + "'";
                         Calendar calendar = Calendar.getInstance();
-                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMMM yyyy HH:mm:ss ", Locale.getDefault());
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yy HH:mm ", Locale.getDefault());
                         String date = simpleDateFormat.format(calendar.getTime());
                         String addingRecord = "INSERT INTO top VALUES ('" + date + "', " + nameOfRecordsman + ", " + String.valueOf(mRightAnswers) + ")";
                         database.execSQL(addingRecord);
