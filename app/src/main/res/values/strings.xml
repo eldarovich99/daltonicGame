@@ -15,5 +15,11 @@
     <string name="time_is_over">"Your time is over!"</string>
     <string name="play">Play</string>
     <string name="settings">Settings</string>
+    <string name="input_name">Input your name:</string>
+    <string name="top">Top:</string>
+    <string name="result">Result</string>
+    <string name="date">Date</string>
+    <string name="name">Name</string>
+    <string name="clear">Clear</string>
 </resources>
 

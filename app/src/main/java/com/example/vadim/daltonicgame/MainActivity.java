@@ -1,13 +1,18 @@
 package com.example.vadim.daltonicgame;
 
+import android.content.Context;
+import android.content.DialogInterface;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,18 +27,24 @@ public class MainActivity extends AppCompatActivity {
     private Timer mTimer;
     private TextView mTimerTextView;
     private TextView mQuestionTextView;
-    private TextView mRightAnswers;
+    private TextView mRightAnswersTextView;
     private Random random;
     private final int GAME_DURATION = 30;
     private int remainingTime;
     final int DELAY = 1000;
     final int PERIOD = 1000;
     private int[] COLORS;
-    private int rightAnswers;
+    private int mRightAnswers;
+    private int maxScore;
     private String[] COLORS_TEXT;
     private Button[] mButtons;
     private Button mStartButton;
     private Button mStopButton;
+    private EditText mNameEditText;
+    private final Context mContext = this;
+    private String nameOfRecordsman;
+
+    SQLiteDatabase database;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
 
         mQuestionTextView = findViewById(R.id.questionTextView);
         mTimerTextView = findViewById(R.id.timerTextView);
-        mRightAnswers = findViewById(R.id.rightAnswers);
+        mRightAnswersTextView = findViewById(R.id.rightAnswers);
 
 
         mButtons = new Button[8];
@@ -88,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
         random = new Random();
 
         mTimerTextView.setText(String.valueOf(remainingTime));
-        mRightAnswers.setText(String.valueOf(rightAnswers));
+        mRightAnswersTextView.setText(String.valueOf(mRightAnswers));
         initButtons();
         startGame();
     }
@@ -117,32 +128,51 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void endGame(){
-        String message = getString(R.string.right_answers) + rightAnswers;
+        String message = getString(R.string.right_answers) + mRightAnswers;
         Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
-        updateDatabase(rightAnswers);
+        database = getBaseContext().openOrCreateDatabase("rating.db", MODE_PRIVATE, null);
+        database.execSQL("CREATE TABLE IF NOT EXISTS top (date TEXT, name TEXT, score INTEGER)");
+        if (isBiggerScore(database, mRightAnswers)) {
+            database.close();
+            updateDatabase();
+        }
     }
 
-    private void updateDatabase(int score){
-        SQLiteDatabase database = getBaseContext().openOrCreateDatabase("rating.db", MODE_PRIVATE, null);
-        database.execSQL("CREATE TABLE IF NOT EXISTS top (date TEXT, name TEXT, score INTEGER)");
+    private void updateDatabase(){
+            LayoutInflater layoutInflater = LayoutInflater.from(mContext);
+            View addRecordView = layoutInflater.inflate(R.layout.add_record, null);
+            AlertDialog.Builder mDialogBuilder = new AlertDialog.Builder(mContext);
+            mDialogBuilder.setView(addRecordView);
+            mNameEditText = addRecordView.findViewById(R.id.input_text);
+            mDialogBuilder.setCancelable(false).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    database = getBaseContext().openOrCreateDatabase("rating.db", MODE_PRIVATE, null);
+                    database.execSQL("CREATE TABLE IF NOT EXISTS top (date TEXT, name TEXT, score INTEGER)");
+                        nameOfRecordsman = "'" + mNameEditText.getText().toString() + "'";
+                        Calendar calendar = Calendar.getInstance();
+                        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMMM yyyy HH:mm:ss ", Locale.getDefault());
+                        String date = simpleDateFormat.format(calendar.getTime());
+                        String addingRecord = "INSERT INTO top VALUES ('" + date + "', " + nameOfRecordsman + ", " + String.valueOf(mRightAnswers) + ")";
+                        database.execSQL(addingRecord);
+                        // debug info
+                        Cursor query = database.rawQuery("SELECT * FROM top", null);
+                        if (query.moveToFirst())
+                            do {
+                                Log.d("db", query.getString(0) + query.getString(1) + String.valueOf(query.getInt(2)));
+                            }
+                            while (query.moveToNext());
+                    database.close();
+                }
+            }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                    dialogInterface.cancel();
+                }
+            });
+            AlertDialog alertDialog = mDialogBuilder.create();
+            alertDialog.show();
 
-        if (isBiggerScore(database, score)){
-            Calendar calendar = Calendar.getInstance();
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd MMMM yyyy HH:mm:ss ", Locale.getDefault());
-            String date = simpleDateFormat.format(calendar.getTime());
-            String name = "'Vadim'";
-            String addingRecord = "INSERT INTO top VALUES ('" + date + "', " + name + ", " + String.valueOf(score) + ")";
-            database.execSQL(addingRecord);
-        }
-        // debug info
-        Cursor query = database.rawQuery("SELECT * FROM top",null);
-        if (query.moveToFirst())
-            do {
-                Log.d("db", query.getString(0) + query.getString(1)+ String.valueOf(query.getInt(2)));
-            }
-            while (query.moveToNext());
-
-        database.close();
 
         //database.execSQL("DROP TABLE IF EXISTS top");
     }
@@ -160,8 +190,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startGame(){
-        rightAnswers = 0;
-        mRightAnswers.setText("0");
+        mRightAnswers = 0;
+        mRightAnswersTextView.setText("0");
         remainingTime = GAME_DURATION;
 
         mTimer = new Timer();
@@ -173,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         mTimerTextView.setText(String.valueOf(remainingTime));
-                        if (remainingTime == 0) {
+                        if (remainingTime <= 0) {
                             mTimer.cancel();
                             endGame();
                         }
@@ -211,8 +241,8 @@ public class MainActivity extends AppCompatActivity {
             ColorDrawable backgroundColor = (ColorDrawable)view.getBackground();
             if (remainingTime > 0){
                 if (checkAnswer(backgroundColor)){
-                        rightAnswers++;
-                        mRightAnswers.setText(String.valueOf(rightAnswers));
+                        mRightAnswers++;
+                        mRightAnswersTextView.setText(String.valueOf(mRightAnswers));
                 }
                 changeQuestion();
             }
