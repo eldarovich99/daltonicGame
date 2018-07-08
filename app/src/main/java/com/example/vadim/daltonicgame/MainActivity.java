@@ -29,13 +29,13 @@ public class MainActivity extends AppCompatActivity {
     private TextView mQuestionTextView;
     private TextView mRightAnswersTextView;
     private Random random;
-    private final int GAME_DURATION = 30;
+    private final int GAME_DURATION = 25;
     private int remainingTime;
     final int DELAY = 1000;
     final int PERIOD = 1000;
     private int[] COLORS;
     private int mRightAnswers;
-    private int maxScore;
+    private int mClicks;
     private String[] COLORS_TEXT;
     private Button[] mButtons;
     private Button mStartButton;
@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
         String message = getString(R.string.right_answers) + mRightAnswers;
         Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
         database = getBaseContext().openOrCreateDatabase("rating.db", MODE_PRIVATE, null);
-        database.execSQL("CREATE TABLE IF NOT EXISTS top (date TEXT, name TEXT, score INTEGER)");
+        database.execSQL("CREATE TABLE IF NOT EXISTS top (date TEXT, name TEXT, percentage DOUBLE, score INTEGER)");
         if (isBiggerScore(database, mRightAnswers)) {
             database.close();
             updateDatabase();
@@ -148,18 +148,22 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     database = getBaseContext().openOrCreateDatabase("rating.db", MODE_PRIVATE, null);
-                    database.execSQL("CREATE TABLE IF NOT EXISTS top (date TEXT, name TEXT, score INTEGER)");
+                    database.execSQL("CREATE TABLE IF NOT EXISTS top (date TEXT, name TEXT, percentage DOUBLE,score INTEGER)");
                         nameOfRecordsman = "'" + mNameEditText.getText().toString() + "'";
                         Calendar calendar = Calendar.getInstance();
                         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yy HH:mm ", Locale.getDefault());
                         String date = simpleDateFormat.format(calendar.getTime());
-                        String addingRecord = "INSERT INTO top VALUES ('" + date + "', " + nameOfRecordsman + ", " + String.valueOf(mRightAnswers) + ")";
+                    Log.d("clicks", String.valueOf(mClicks));
+                        double percentage = mRightAnswers / mClicks;
+
+
+                        String addingRecord = "INSERT INTO top VALUES ('" + date + "', " + nameOfRecordsman + ", " + String.valueOf(percentage) + ", " + String.valueOf(mRightAnswers) + ")";
                         database.execSQL(addingRecord);
                         // debug info
                         Cursor query = database.rawQuery("SELECT * FROM top", null);
                         if (query.moveToFirst())
                             do {
-                                Log.d("db", query.getString(0) + query.getString(1) + String.valueOf(query.getInt(2)));
+                                Log.d("db", query.getString(0) + query.getString(1) + String.valueOf(query.getDouble(2)) + String.valueOf(query.getInt(3)));
                             }
                             while (query.moveToNext());
                     database.close();
@@ -182,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
         int max = 0;
         if (query.moveToFirst())
             do {
-                int currentScore = query.getInt(2);
+                int currentScore = query.getInt(3);
                 if (currentScore > max) max = currentScore;
             }
             while (query.moveToNext());
@@ -191,6 +195,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void startGame(){
         mRightAnswers = 0;
+        mClicks = 0;
         mRightAnswersTextView.setText("0");
         remainingTime = GAME_DURATION;
 
@@ -238,6 +243,7 @@ public class MainActivity extends AppCompatActivity {
     private class buttonsClickListener implements View.OnClickListener{
         @Override
         public void onClick(View view){
+            mClicks++;
             ColorDrawable backgroundColor = (ColorDrawable)view.getBackground();
             if (remainingTime > 0){
                 if (checkAnswer(backgroundColor)){
