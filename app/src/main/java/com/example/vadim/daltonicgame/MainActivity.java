@@ -198,6 +198,7 @@ public class MainActivity extends AppCompatActivity {
         mRightAnswers = 0;
         mClicks = 0;
         mRightAnswersTextView.setText("0");
+        if (remainingTime > 0) mTimer.cancel();
         remainingTime = GAME_DURATION;
 
         mTimer = new Timer();
