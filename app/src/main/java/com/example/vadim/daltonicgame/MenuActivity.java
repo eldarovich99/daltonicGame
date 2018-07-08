@@ -9,6 +9,8 @@ import android.widget.Button;
 public class MenuActivity extends AppCompatActivity {
     private Button mPlayButton;
     private Button mRatingButton;
+    private Button mExitButton;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -18,6 +20,7 @@ public class MenuActivity extends AppCompatActivity {
     private void init(){
         mPlayButton = findViewById(R.id.play_button);
         mRatingButton= findViewById(R.id.ratingButton);
+        mExitButton = findViewById(R.id.exitButton);
         mPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -30,6 +33,12 @@ public class MenuActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(MenuActivity.this, RatingActivity.class);
                 startActivity(intent);
+            }
+        });
+        mExitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finishAffinity();
             }
         });
     }

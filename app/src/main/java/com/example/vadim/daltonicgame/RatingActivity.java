@@ -51,7 +51,7 @@ public class RatingActivity extends AppCompatActivity {
     private void setInitialData() {
 
         database = getBaseContext().openOrCreateDatabase("rating.db", MODE_PRIVATE, null);
-        database.execSQL("CREATE TABLE IF NOT EXISTS top (date TEXT, name TEXT, score INTEGER)");
+        database.execSQL("CREATE TABLE IF NOT EXISTS top (date TEXT, name TEXT, percentage TEXT, score INTEGER)");
         Cursor query = database.rawQuery("SELECT * FROM top", null);
         if (query.moveToLast()){
            do{

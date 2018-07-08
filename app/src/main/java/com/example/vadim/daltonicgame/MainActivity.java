@@ -133,9 +133,9 @@ public class MainActivity extends AppCompatActivity {
         database = getBaseContext().openOrCreateDatabase("rating.db", MODE_PRIVATE, null);
         database.execSQL("CREATE TABLE IF NOT EXISTS top (date TEXT, name TEXT, percentage TEXT, score INTEGER)");
         if (isBiggerScore(database, mRightAnswers)) {
-            database.close();
             updateDatabase();
         }
+        database.close();
     }
 
     private void updateDatabase(){
@@ -260,4 +260,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        mTimer.cancel();
+        super.onDestroy();
+    }
 }

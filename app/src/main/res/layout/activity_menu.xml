@@ -8,6 +8,7 @@
     android:background="@color/yogurt"
     android:orientation="vertical">
     <Button
+        android:layout_margin="@dimen/marginStd"
         android:id="@+id/play_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -15,22 +16,19 @@
         android:backgroundTint="@color/lime"
         android:text="@string/play"/>
     <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textAllCaps="false"
-        android:backgroundTint="@color/lime"
-        android:text="@string/settings"/>
-    <Button
+        android:layout_margin="@dimen/marginStd"
         android:id="@+id/ratingButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAllCaps="false"
         android:backgroundTint="@color/lime"
-        android:text="Rating" />
+        android:text="@string/rating" />
     <Button
+        android:id="@+id/exitButton"
+        android:layout_margin="@dimen/marginStd"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAllCaps="false"
         android:backgroundTint="@color/lime"
-        android:text="Exit"/>
+        android:text="@string/exit"/>
 </LinearLayout>
