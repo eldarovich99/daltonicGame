@@ -89,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
         mStopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mTimer.cancel();
                 remainingTime = 0;
                 mTimerTextView.setText(String.valueOf(remainingTime));
                 endGame();
@@ -128,10 +127,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void endGame(){
+        mTimer.cancel();
         String message = getString(R.string.right_answers) + mRightAnswers;
         Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
         database = getBaseContext().openOrCreateDatabase("rating.db", MODE_PRIVATE, null);
-        database.execSQL("CREATE TABLE IF NOT EXISTS top (date TEXT, name TEXT, percentage DOUBLE, score INTEGER)");
+        database.execSQL("CREATE TABLE IF NOT EXISTS top (date TEXT, name TEXT, percentage TEXT, score INTEGER)");
         if (isBiggerScore(database, mRightAnswers)) {
             database.close();
             updateDatabase();
@@ -148,22 +148,23 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
                     database = getBaseContext().openOrCreateDatabase("rating.db", MODE_PRIVATE, null);
-                    database.execSQL("CREATE TABLE IF NOT EXISTS top (date TEXT, name TEXT, percentage DOUBLE,score INTEGER)");
+                    database.execSQL("CREATE TABLE IF NOT EXISTS top (date TEXT, name TEXT, percentage TEXT,score INTEGER)");
                         nameOfRecordsman = "'" + mNameEditText.getText().toString() + "'";
                         Calendar calendar = Calendar.getInstance();
                         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yy HH:mm ", Locale.getDefault());
                         String date = simpleDateFormat.format(calendar.getTime());
                     Log.d("clicks", String.valueOf(mClicks));
-                        double percentage = mRightAnswers / mClicks;
+                    double clicks = (double) mClicks;
+                        double percentage = mRightAnswers / clicks * 100;
+                        String percentageString = String.format("%.2f", percentage);
 
-
-                        String addingRecord = "INSERT INTO top VALUES ('" + date + "', " + nameOfRecordsman + ", " + String.valueOf(percentage) + ", " + String.valueOf(mRightAnswers) + ")";
+                        String addingRecord = "INSERT INTO top VALUES ('" + date + "', " + nameOfRecordsman + ", '" + percentageString + "', " + String.valueOf(mRightAnswers) + ")";
                         database.execSQL(addingRecord);
                         // debug info
                         Cursor query = database.rawQuery("SELECT * FROM top", null);
                         if (query.moveToFirst())
                             do {
-                                Log.d("db", query.getString(0) + query.getString(1) + String.valueOf(query.getDouble(2)) + String.valueOf(query.getInt(3)));
+                                Log.d("db", query.getString(0) + query.getString(1) + String.valueOf(query.getString(2)) + String.valueOf(query.getInt(3)));
                             }
                             while (query.moveToNext());
                     database.close();
@@ -257,4 +258,5 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
 }

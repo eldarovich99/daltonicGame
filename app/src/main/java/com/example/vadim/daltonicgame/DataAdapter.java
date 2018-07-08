@@ -9,6 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 import java.util.List;
 
 public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
@@ -31,6 +33,7 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
         Record record = mRecords.get(position);
         holder.mNameTextView.setText(record.getName());
         holder.mDateTextView.setText(record.getDate());
+        holder.mPercentageTextView.setText(String.valueOf(record.getPercentage()));
         holder.mResultTextView.setText(String.valueOf(record.getResult()));
     }
 
@@ -42,11 +45,13 @@ public class DataAdapter extends RecyclerView.Adapter<DataAdapter.ViewHolder> {
     public  class ViewHolder extends RecyclerView.ViewHolder {
         final TextView mNameTextView;
         final TextView mDateTextView;
+        final TextView mPercentageTextView;
         final TextView mResultTextView;
         ViewHolder(View view){
             super(view);
             mNameTextView = view.findViewById(R.id.recordNameTextView);
             mDateTextView = view.findViewById(R.id.recordDateTextView);
+            mPercentageTextView = view.findViewById(R.id.recordPercentageTextView);
             mResultTextView = view.findViewById(R.id.recordResultTextView);
         }
     }

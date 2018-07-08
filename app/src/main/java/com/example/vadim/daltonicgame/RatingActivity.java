@@ -55,7 +55,7 @@ public class RatingActivity extends AppCompatActivity {
         Cursor query = database.rawQuery("SELECT * FROM top", null);
         if (query.moveToLast()){
            do{
-               Record record = new Record(query.getString(1), query.getString(0), query.getInt(2));
+               Record record = new Record(query.getString(1), query.getString(0), query.getString(2),query.getInt(3));
                mRecords.add(record);
            }  while (query.moveToPrevious());
         }
