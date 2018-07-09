@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
         database.execSQL("CREATE TABLE IF NOT EXISTS top (date TEXT, name TEXT, percentage TEXT, score INTEGER)");
         double clicks = (double) mClicks;
         mPercentage = mRightAnswers / clicks * 100;
-        if (isBiggerScore(database, mRightAnswers, mPercentage)) {
+        if (isBiggerScore(database, mRightAnswers)) {
             updateDatabase();
         }
         database.close();
@@ -184,20 +184,16 @@ public class MainActivity extends AppCompatActivity {
         //database.execSQL("DROP TABLE IF EXISTS top");
     }
 
-    private boolean isBiggerScore(SQLiteDatabase database, int score, double percentage){
+    private boolean isBiggerScore(SQLiteDatabase database, int score){
         Cursor query = database.rawQuery("SELECT * FROM top",null);
         int max = 0;
-        double maxPercentage = 0;
         if (query.moveToFirst())
             do {
                 int currentScore = query.getInt(3);
-                if (currentScore > max){
-                    max = currentScore;
-                    maxPercentage = Double.parseDouble(query.getString(2));
-                }
+                if (currentScore > max) max = currentScore;
             }
             while (query.moveToNext());
-        return score > max || (score >= max && percentage > maxPercentage);
+        return score > max;
     }
 
     private void startGame(){
