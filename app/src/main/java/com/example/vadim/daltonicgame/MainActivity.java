@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private EditText mNameEditText;
     private final Context mContext = this;
     private String nameOfRecordsman;
+    private String mPreviousQuestion;
 
     SQLiteDatabase database;
     @Override
@@ -233,7 +234,14 @@ public class MainActivity extends AppCompatActivity {
             textColor = COLORS[random.nextInt(COLORS.length)];
         mQuestionTextView.setBackgroundColor(backgroundColor);
         mQuestionTextView.setTextColor(textColor);
-        mQuestionTextView.setText(COLORS_TEXT[random.nextInt(mButtons.length)]);
+        String currentQuestion = COLORS_TEXT[random.nextInt(mButtons.length)];
+        if (mPreviousQuestion != null && currentQuestion == mPreviousQuestion) {
+            while (currentQuestion == mPreviousQuestion)
+                currentQuestion = COLORS_TEXT[random.nextInt(mButtons.length)];
+        }
+        mQuestionTextView.setText(currentQuestion);
+        mPreviousQuestion = currentQuestion;
+
     }
 
     private boolean checkAnswer(ColorDrawable backgroundColor){
