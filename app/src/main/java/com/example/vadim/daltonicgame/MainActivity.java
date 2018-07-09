@@ -36,6 +36,7 @@ public class MainActivity extends AppCompatActivity {
     private int[] COLORS;
     private int mRightAnswers;
     private int mClicks;
+    private double mPercentage;
     private String[] COLORS_TEXT;
     private Button[] mButtons;
     private Button mStartButton;
@@ -132,7 +133,9 @@ public class MainActivity extends AppCompatActivity {
         Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
         database = getBaseContext().openOrCreateDatabase("rating.db", MODE_PRIVATE, null);
         database.execSQL("CREATE TABLE IF NOT EXISTS top (date TEXT, name TEXT, percentage TEXT, score INTEGER)");
-        if (isBiggerScore(database, mRightAnswers)) {
+        double clicks = (double) mClicks;
+        mPercentage = mRightAnswers / clicks * 100;
+        if (isBiggerScore(database, mRightAnswers, mPercentage)) {
             updateDatabase();
         }
         database.close();
@@ -154,9 +157,7 @@ public class MainActivity extends AppCompatActivity {
                         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yy HH:mm ", Locale.getDefault());
                         String date = simpleDateFormat.format(calendar.getTime());
                     Log.d("clicks", String.valueOf(mClicks));
-                    double clicks = (double) mClicks;
-                        double percentage = mRightAnswers / clicks * 100;
-                        String percentageString = String.format("%.2f", percentage);
+                        String percentageString = String.format("%.2f", mPercentage);
 
                         String addingRecord = "INSERT INTO top VALUES ('" + date + "', " + nameOfRecordsman + ", '" + percentageString + "', " + String.valueOf(mRightAnswers) + ")";
                         database.execSQL(addingRecord);
@@ -182,16 +183,20 @@ public class MainActivity extends AppCompatActivity {
         //database.execSQL("DROP TABLE IF EXISTS top");
     }
 
-    private boolean isBiggerScore(SQLiteDatabase database, int score){
+    private boolean isBiggerScore(SQLiteDatabase database, int score, double percentage){
         Cursor query = database.rawQuery("SELECT * FROM top",null);
         int max = 0;
+        double maxPercentage = 0;
         if (query.moveToFirst())
             do {
                 int currentScore = query.getInt(3);
-                if (currentScore > max) max = currentScore;
+                if (currentScore > max){
+                    max = currentScore;
+                    maxPercentage = Double.parseDouble(query.getString(2));
+                }
             }
             while (query.moveToNext());
-        return score > max;
+        return score > max || (score >= max && percentage > maxPercentage);
     }
 
     private void startGame(){
