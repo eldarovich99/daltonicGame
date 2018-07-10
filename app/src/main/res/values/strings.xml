@@ -23,5 +23,6 @@
     <string name="clear">Clear</string>
     <string name="rating">Rating</string>
     <string name="exit">Exit</string>
+    <string name="choose_game_mode">Choose game mode:</string>
 </resources>
 

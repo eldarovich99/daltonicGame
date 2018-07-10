@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/yogurt"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    tools:context=".Settings">
+
+    <TextView
+        android:padding="@dimen/marginStd"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+        android:textColor="@color/black"
+    android:text="@string/choose_game_mode"/>
+
+    <RadioGroup
+        android:id="@+id/settings_radio_group"
+        android:layout_weight="1"
+        android:padding="@dimen/marginStd"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <RadioButton
+            android:id="@+id/first_mode_radio_button"
+            android:padding="@dimen/marginStd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0,1s extra time for right answer, background is not changing, buttons are not changing"/>
+        <RadioButton
+            android:id="@+id/second_mode_radio_button"
+            android:padding="@dimen/marginStd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0,2s extra time for right answer, background is  changing, buttons are not changing"/>
+        <RadioButton
+            android:id="@+id/third_mode_radio_button"
+            android:padding="@dimen/marginStd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0,3s extra time for right answer, background is changing, buttons are changing"/>
+    </RadioGroup>
+    <LinearLayout
+        android:layout_weight="0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/setting_cancel_button"
+            android:layout_margin="@dimen/marginStd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="Cancel"/>
+        <Button
+            android:id="@+id/settings_ok_button"
+            android:layout_margin="@dimen/marginStd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAllCaps="false"
+            android:text="Ok"/>
+    </LinearLayout>
+</LinearLayout>

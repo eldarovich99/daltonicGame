@@ -10,7 +10,7 @@ public class MenuActivity extends AppCompatActivity {
     private Button mPlayButton;
     private Button mRatingButton;
     private Button mExitButton;
-
+    private Button mSettingsButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,8 +19,11 @@ public class MenuActivity extends AppCompatActivity {
     }
     private void init(){
         mPlayButton = findViewById(R.id.play_button);
-        mRatingButton= findViewById(R.id.ratingButton);
-        mExitButton = findViewById(R.id.exitButton);
+        mRatingButton= findViewById(R.id.rating_button);
+        mExitButton = findViewById(R.id.exit_button);
+        mSettingsButton = findViewById(R.id.settings_button);
+
+
         mPlayButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -39,6 +42,13 @@ public class MenuActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 finishAffinity();
+            }
+        });
+        mSettingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MenuActivity.this, Settings.class);
+                startActivity(intent);
             }
         });
     }
