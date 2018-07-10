@@ -9,10 +9,11 @@
     tools:context=".Settings">
 
     <TextView
-        android:padding="@dimen/marginStd"
+        android:layout_margin="@dimen/marginStd"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
         android:textColor="@color/black"
+        android:textSize="20sp"
     android:text="@string/choose_game_mode"/>
 
     <RadioGroup
@@ -26,19 +27,19 @@
             android:padding="@dimen/marginStd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0,1s extra time for right answer, background is not changing, buttons are not changing"/>
+            android:text="0,1s extra time for the right answer,the  background is not changing, buttons are not changing"/>
         <RadioButton
             android:id="@+id/second_mode_radio_button"
             android:padding="@dimen/marginStd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0,2s extra time for right answer, background is  changing, buttons are not changing"/>
+            android:text="0,2s extra time for the right answer, the background is  changing, buttons are not changing"/>
         <RadioButton
             android:id="@+id/third_mode_radio_button"
             android:padding="@dimen/marginStd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="0,3s extra time for right answer, background is changing, buttons are changing"/>
+            android:text="0,3s extra time for the right answer, the background is changing, buttons are changing"/>
     </RadioGroup>
     <LinearLayout
         android:layout_weight="0"

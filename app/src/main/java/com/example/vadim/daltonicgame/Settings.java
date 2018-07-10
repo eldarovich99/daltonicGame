@@ -1,5 +1,6 @@
 package com.example.vadim.daltonicgame;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 public class Settings extends AppCompatActivity {
     private RadioGroup mRadioGroup;
@@ -63,8 +65,15 @@ public class Settings extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 mSharedPreferences.edit().putInt(GAME_MODE, mCurrentGameMode).apply();
+                Toast.makeText(getApplicationContext(), "Settings applied!", Toast.LENGTH_SHORT).show();
+                finish();
             }
         });
-
+         mCancelButton.setOnClickListener(new View.OnClickListener() {
+             @Override
+             public void onClick(View view) {
+                 finish();
+             }
+         });
     }
 }

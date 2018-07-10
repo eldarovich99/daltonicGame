@@ -31,9 +31,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView mRightAnswersTextView;
     private Random random;
     private final int GAME_DURATION = 25;
-    private int remainingTime;
-    final int DELAY = 1000;
-    final int PERIOD = 1000;
+    private double remainingTime;
+    final int PERIOD = 100;
     private int[] COLORS;
     private int mRightAnswers;
     private int mClicks;
@@ -50,8 +49,10 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences mSharedPreferences;
     private final String APP_PREFERENCES = "settings";
     private final String GAME_MODE = "game_mode";
-    private final int[] mGameModes = {0,1,2};
-
+    //private static final int[] mGameModes = {0,1,2};
+    private final int FIRST_MODE = 0;
+    private final int SECOND_MODE = 1;
+    private final int THIRD_MODE = 2;
 
     SQLiteDatabase database;
     @Override
@@ -65,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
         mSharedPreferences = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
         if (mSharedPreferences.contains(GAME_MODE))
             mGameMode = mSharedPreferences.getInt(GAME_MODE, Context.MODE_PRIVATE);
-        else mGameMode = mGameModes[1];
+        else mGameMode = SECOND_MODE;
         COLORS = new int[]{getColor(R.color.blue), getColor(R.color.green),
                 getColor(R.color.pink), getColor(R.color.purple),
                 getColor(R.color.yellow), getColor(R.color.red),
@@ -95,15 +96,13 @@ public class MainActivity extends AppCompatActivity {
         mStartButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startGame();
+                if (remainingTime == 0) startGame();
             }
         });
 
         mStopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                remainingTime = 0;
-                mTimerTextView.setText(String.valueOf(remainingTime));
                 endGame();
             }
         });
@@ -141,6 +140,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void endGame(){
         mTimer.cancel();
+        remainingTime = 0;
+        mTimerTextView.setText(String.valueOf(remainingTime));
         String message = getString(R.string.right_answers) + mRightAnswers;
         Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
         database = getBaseContext().openOrCreateDatabase("rating.db", MODE_PRIVATE, null);
@@ -218,11 +219,11 @@ public class MainActivity extends AppCompatActivity {
         mTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                remainingTime -=1;
+                remainingTime -=0.1;
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        mTimerTextView.setText(String.valueOf(remainingTime));
+                        mTimerTextView.setText(String.format("%.1f", remainingTime));
                         if (remainingTime <= 0) {
                             mTimer.cancel();
                             endGame();
@@ -237,10 +238,10 @@ public class MainActivity extends AppCompatActivity {
     private void changeQuestion(){
         int backgroundColor = COLORS[random.nextInt(COLORS.length)];
         int textColor = COLORS[random.nextInt(COLORS.length)];
-        while (textColor == backgroundColor)
+        while (textColor == backgroundColor || (textColor == COLORS[5] && backgroundColor == COLORS[2]) || (textColor == COLORS[2] && backgroundColor == COLORS[5]))
             textColor = COLORS[random.nextInt(COLORS.length)];
-        if (mGameMode != mGameModes[0]) mQuestionTextView.setBackgroundColor(backgroundColor);
-        if (mGameMode == mGameModes[2]) initButtons();
+        if (mGameMode != FIRST_MODE) mQuestionTextView.setBackgroundColor(backgroundColor);
+        if (mGameMode == THIRD_MODE) initButtons();
         mQuestionTextView.setTextColor(textColor);
         String currentQuestion = COLORS_TEXT[random.nextInt(mButtons.length)];
         if (mPreviousQuestion != null && currentQuestion == mPreviousQuestion) {
@@ -272,6 +273,12 @@ public class MainActivity extends AppCompatActivity {
                 if (checkAnswer(backgroundColor)){
                         mRightAnswers++;
                         mRightAnswersTextView.setText(String.valueOf(mRightAnswers));
+                        switch (mGameMode) {
+                            case FIRST_MODE: remainingTime += 0.1;
+                            case SECOND_MODE: remainingTime += 0.2;
+                            case THIRD_MODE: remainingTime += 0.3;
+                        }
+                        mTimerTextView.setText(String.format("%.1f", remainingTime));
                 }
                 changeQuestion();
             }
