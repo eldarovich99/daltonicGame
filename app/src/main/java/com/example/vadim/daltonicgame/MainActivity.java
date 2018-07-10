@@ -2,6 +2,7 @@ package com.example.vadim.daltonicgame;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.drawable.ColorDrawable;
@@ -36,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private int[] COLORS;
     private int mRightAnswers;
     private int mClicks;
+    private int mGameMode;
     private double mPercentage;
     private String[] COLORS_TEXT;
     private Button[] mButtons;
@@ -45,6 +47,11 @@ public class MainActivity extends AppCompatActivity {
     private final Context mContext = this;
     private String nameOfRecordsman;
     private String mPreviousQuestion;
+    private SharedPreferences mSharedPreferences;
+    private final String APP_PREFERENCES = "settings";
+    private final String GAME_MODE = "game_mode";
+    private final int[] mGameModes = {0,1,2};
+
 
     SQLiteDatabase database;
     @Override
@@ -55,6 +62,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
+        mSharedPreferences = getSharedPreferences(APP_PREFERENCES, Context.MODE_PRIVATE);
+        if (mSharedPreferences.contains(GAME_MODE))
+            mGameMode = mSharedPreferences.getInt(GAME_MODE, Context.MODE_PRIVATE);
+        else mGameMode = mGameModes[1];
         COLORS = new int[]{getColor(R.color.blue), getColor(R.color.green),
                 getColor(R.color.pink), getColor(R.color.purple),
                 getColor(R.color.yellow), getColor(R.color.red),
@@ -228,7 +239,8 @@ public class MainActivity extends AppCompatActivity {
         int textColor = COLORS[random.nextInt(COLORS.length)];
         while (textColor == backgroundColor)
             textColor = COLORS[random.nextInt(COLORS.length)];
-        mQuestionTextView.setBackgroundColor(backgroundColor);
+        if (mGameMode != mGameModes[0]) mQuestionTextView.setBackgroundColor(backgroundColor);
+        if (mGameMode == mGameModes[2]) initButtons();
         mQuestionTextView.setTextColor(textColor);
         String currentQuestion = COLORS_TEXT[random.nextInt(mButtons.length)];
         if (mPreviousQuestion != null && currentQuestion == mPreviousQuestion) {

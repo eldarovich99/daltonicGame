@@ -16,8 +16,8 @@ public class Settings extends AppCompatActivity {
     private RadioButton[] mRadioButtons;
     private final int[] mGameModes = {0,1,2};
     private int mCurrentGameMode;
-    public final String APP_PREFERENCES = "settings";
-    public final String GAME_MODE = "game_mode";
+    private final String APP_PREFERENCES = "settings";
+    private final String GAME_MODE = "game_mode";
     private SharedPreferences mSharedPreferences;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,6 +25,8 @@ public class Settings extends AppCompatActivity {
         setContentView(R.layout.activity_settings);
         init();
     }
+
+
     private void init(){
         mRadioGroup = findViewById(R.id.settings_radio_group);
         mOkButton = findViewById(R.id.settings_ok_button);
